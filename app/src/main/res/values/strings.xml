@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AgileStudent</string>
+    <string name="pleaseLogin">Please log in:</string>
+    <string name="login">Login</string>
+    <string name="welcome">Welcome to Agile Student!</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+</resources>
