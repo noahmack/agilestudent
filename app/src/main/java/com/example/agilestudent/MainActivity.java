@@ -17,14 +17,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 public class MainActivity extends AppCompatActivity {
 
     //Components
     private EditText username;
     private EditText password;
     private Button loginButton;
+    private Button createStoryButton;
     private ProgressBar progressBar;
     private TextView welcomeMessage;
+    private TextInputEditText storyTitle;
+    private TextInputEditText storyDescription;
+    private TextInputEditText storyDuration;
+    private TextInputEditText storyPurpose;
 
     //Database
     private UserDatabase db;
@@ -52,6 +59,25 @@ public class MainActivity extends AppCompatActivity {
 
         welcomeMessage = findViewById(R.id.welcomeMessage);
         welcomeMessage.setText("Welcome, " + activeUser.getUsername().toString());
+
+        createStoryButton = findViewById(R.id.createStoryButton);
+    }
+
+    public void switchToCreateStory() {
+        setContentView(R.layout.layout_create_story);
+        storyTitle = findViewById(R.id.storyTitleEditText);
+        storyDescription = findViewById(R.id.storyDescriptionEditText);
+        storyDuration = findViewById(R.id.storyDurationEditText);
+        storyPurpose = findViewById(R.id.storyPurposeEditText);
+
+    }
+
+    public void onBackClicked(View view) {
+        switchToDashboard();
+    }
+
+    public void onCreateStoryClicked(View view) {
+        switchToCreateStory();
     }
 
     public void onLoginClicked(View view) {

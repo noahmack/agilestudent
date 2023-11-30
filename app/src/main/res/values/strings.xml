@@ -5,4 +5,10 @@
     <string name="welcome">Welcome to Agile Student!</string>
     <string name="username">username</string>
     <string name="password">password</string>
+    <string name="createStory">Create Story</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="purpose">Purpose</string>
+    <string name="duration">Duration</string>
+    <string name="back">Back</string>
 </resources>
