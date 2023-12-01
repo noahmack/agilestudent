@@ -3,17 +3,19 @@ package com.example.agilestudent;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.List;
 
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +27,10 @@ public class MainActivity extends AppCompatActivity {
     private EditText username;
     private EditText password;
     private Button loginButton;
+    private Button newStoryButton;
+    private Button createStoryBackButton;
     private Button createStoryButton;
+    private ListView storyListView;
     private ProgressBar progressBar;
     private TextView welcomeMessage;
     private TextInputEditText storyTitle;
@@ -60,7 +65,18 @@ public class MainActivity extends AppCompatActivity {
         welcomeMessage = findViewById(R.id.welcomeMessage);
         welcomeMessage.setText("Welcome, " + activeUser.getUsername().toString());
 
-        createStoryButton = findViewById(R.id.createStoryButton);
+        newStoryButton = findViewById(R.id.newStoryButton);
+
+        storyListView = findViewById(R.id.storyListView);
+        List<Story> storyList = db.storyDao().getStoriesByUserId(activeUser.getUserId());
+
+        String[] storyArray = new String[storyList.size()];
+        for(int i = 0; i < storyList.size(); i++) {
+            storyArray[i] = "STORY" + storyList.get(i).getStoryId() + ": " + storyList.get(i).getTitle();
+        }
+        ArrayAdapter<String> stories = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, storyArray);
+        stories.setDropDownViewResource(R.layout.layout_dashboard);
+        storyListView.setAdapter(stories);
     }
 
     public void switchToCreateStory() {
@@ -69,20 +85,37 @@ public class MainActivity extends AppCompatActivity {
         storyDescription = findViewById(R.id.storyDescriptionEditText);
         storyDuration = findViewById(R.id.storyDurationEditText);
         storyPurpose = findViewById(R.id.storyPurposeEditText);
+        createStoryButton = findViewById(R.id.createStoryButton);
+        createStoryBackButton = findViewById(R.id.createStoryBackButton);
+    }
 
+    public void onCreateStoryClicked(View view) {
+        String title = storyTitle.getText().toString();
+        String description = storyDescription.getText().toString();
+        String duration = storyDuration.getText().toString();
+        int intDuration = Integer.parseInt(duration);
+        String purpose = storyPurpose.getText().toString();
+
+        Story story = new Story(title, description, 1, intDuration, purpose, activeUser.getUserId());
+
+        Log.d("Story Insert", "Insert story with userId: " + story.getUserId());
+        db.storyDao().insertStory(story);
+
+
+        switchToDashboard();
     }
 
     public void onBackClicked(View view) {
         switchToDashboard();
     }
 
-    public void onCreateStoryClicked(View view) {
+    public void onNewStoryClicked(View view) {
         switchToCreateStory();
     }
 
     public void onLoginClicked(View view) {
         List<User> users = db.userDao().getAll();
-        User user = new User(users.size(), username.getText().toString(), password.getText().toString());
+        User user = new User(username.getText().toString(), password.getText().toString());
         if(users.contains(user)) {
             User dbUser = users.get(users.indexOf(user));
             if(!dbUser.getPassword().equals(user.getPassword())) {
@@ -90,13 +123,13 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Log.d("DB", "User " + user.getUsername() + " already exists under id " + user.getUserId());
                 Toast.makeText(getApplicationContext(), "Logging in...", Toast.LENGTH_SHORT).show();
-                activeUser = user;
+                activeUser = db.userDao().findUser(user.getUsername(), user.getPassword());;
                 switchToDashboard();
             }
         } else {
             Toast.makeText(getApplicationContext(), "New user " + user.getUsername() + " created, logging in...", Toast.LENGTH_SHORT).show();
             db.userDao().insert(user);
-            activeUser = user;
+            activeUser = db.userDao().findUser(user.getUsername(), user.getPassword());
             Log.d("DB", db.userDao().getAll().get(0).toString());
             switchToDashboard();
         }

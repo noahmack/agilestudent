@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey;
                                                         childColumns = "userId",
                                                         onDelete = ForeignKey.CASCADE))
 public class Story {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public int storyId;
     @ColumnInfo(name = "title")
     public String title;
@@ -27,8 +27,7 @@ public class Story {
     @ColumnInfo(name = "userId")
     public int userId;
 
-    public Story(int storyId, String title, String description, int sprint, int duration, String purpose, int userId) {
-        this.storyId = storyId;
+    public Story(String title, String description, int sprint, int duration, String purpose, int userId) {
         this.title = title;
         this.description = description;
         this.sprint = sprint;
@@ -92,5 +91,8 @@ public class Story {
 
     public void setComplete(boolean complete) {
         isComplete = complete;
+    }
+    public int getUserId() {
+        return userId;
     }
 }

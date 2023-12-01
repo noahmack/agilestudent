@@ -11,19 +11,11 @@
         android:layout_width="363dp"
         android:layout_height="56dp"
         android:progressDrawable="@drawable/greenprogress"
-        app:layout_constraintBottom_toTopOf="@+id/storySpinner"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Spinner
-        android:id="@+id/storySpinner"
-        android:layout_width="409dp"
-        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.120000005" />
 
     <TextView
         android:id="@+id/welcomeMessage"
@@ -38,16 +30,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/createStoryButton"
+        android:id="@+id/newStoryButton"
         style="@android:style/Widget.DeviceDefault.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onCreateStoryClicked"
-        android:text="@string/createStory"
+        android:onClick="onNewStoryClicked"
+        android:text="@string/newStory"
         app:iconTint="#701717"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/storySpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/progressBar"
+        app:layout_constraintVertical_bias="0.88" />
+
+    <ListView
+        android:id="@+id/storyListView"
+        android:layout_width="409dp"
+        android:layout_height="431dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="1dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

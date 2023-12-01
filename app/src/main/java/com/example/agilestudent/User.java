@@ -11,7 +11,8 @@ import java.util.List;
 
 @Entity(tableName = "user")
 public class User {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "userId")
     public int userId;
 
     @ColumnInfo(name = "username")
@@ -29,8 +30,7 @@ public class User {
     @ColumnInfo(name = "sprintDuration")
     public int sprintDuration;
 
-    public User(int userId, String username, String password) {
-        this.userId = userId;
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
         this.numStories = 0;
