@@ -3,7 +3,6 @@ package com.example.agilestudent;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
-import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,7 +14,6 @@ import java.util.List;
 
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,12 +79,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void switchToCreateStory() {
         setContentView(R.layout.layout_create_story);
-        storyTitle = findViewById(R.id.storyTitleEditText);
+        storyTitle = findViewById(R.id.storyTitleEditStory);
         storyDescription = findViewById(R.id.storyDescriptionEditText);
-        storyDuration = findViewById(R.id.storyDurationEditText);
-        storyPurpose = findViewById(R.id.storyPurposeEditText);
-        createStoryButton = findViewById(R.id.createStoryButton);
-        createStoryBackButton = findViewById(R.id.createStoryBackButton);
+        storyDuration = findViewById(R.id.storyDurationEditStory);
+        storyPurpose = findViewById(R.id.storyPurposeEditStory);
+        createStoryButton = findViewById(R.id.editStoryButton);
+        createStoryBackButton = findViewById(R.id.editStoryBackButton);
     }
 
     public void onCreateStoryClicked(View view) {

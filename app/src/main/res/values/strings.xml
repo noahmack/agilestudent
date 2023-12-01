@@ -7,6 +7,7 @@
     <string name="password">password</string>
     <string name="newStory">New Story</string>
     <string name="createStory">Create Story</string>
+    <string name="editStory">Edit Story</string>
     <string name="description">Description</string>
     <string name="title">Title</string>
     <string name="purpose">Purpose</string>
