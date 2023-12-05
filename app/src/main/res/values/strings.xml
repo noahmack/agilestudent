@@ -13,4 +13,7 @@
     <string name="purpose">Purpose</string>
     <string name="duration">Duration</string>
     <string name="back">Back</string>
+    <string name="completeStory">Complete Story</string>
+    <string name="undoComplete">Undo Complete</string>
+    <string name="highFive">High Five!</string>
 </resources>

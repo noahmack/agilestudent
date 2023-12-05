@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/editStory"
+        android:id="@+id/createStory"
         android:layout_width="290dp"
         android:layout_height="73dp"
         android:text="@string/createStory"
@@ -24,12 +24,12 @@
         android:layout_width="409dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/textInputLayout2"
-        app:layout_constraintTop_toBottomOf="@+id/editStory"
+        app:layout_constraintTop_toBottomOf="@+id/createStory"
         app:layout_constraintVertical_bias="0.85"
         tools:layout_editor_absoluteX="1dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/storyDescriptionEditText"
+            android:id="@+id/storyDescriptionCreateStory"
             android:layout_width="match_parent"
             android:layout_height="178dp"
             android:hint="@string/description" />
@@ -41,10 +41,10 @@
         app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editStory">
+        app:layout_constraintTop_toBottomOf="@+id/createStory">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/storyTitleEditStory"
+            android:id="@+id/storyTitleCreateStory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/title" />
@@ -55,11 +55,11 @@
         android:layout_width="409dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editStory"
+        app:layout_constraintTop_toBottomOf="@+id/createStory"
         tools:layout_editor_absoluteX="1dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/storyDurationEditStory"
+            android:id="@+id/storyDurationCreateStory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/duration" />
@@ -75,14 +75,14 @@
         tools:layout_editor_absoluteX="1dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/storyPurposeEditStory"
+            android:id="@+id/storyPurposeCreateStory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/purpose" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/editStoryButton"
+        android:id="@+id/createStoryButton"
         android:layout_width="91dp"
         android:layout_height="wrap_content"
         android:onClick="onCreateStoryClicked"
@@ -94,13 +94,13 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
 
     <Button
-        android:id="@+id/editStoryBackButton"
+        android:id="@+id/createStoryBackButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onBackClicked"
         android:text="@string/back"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/editStoryButton"
+        app:layout_constraintEnd_toStartOf="@+id/createStoryButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
 </androidx.constraintlayout.widget.ConstraintLayout>

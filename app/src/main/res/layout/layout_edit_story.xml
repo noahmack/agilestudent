@@ -29,7 +29,7 @@
         tools:layout_editor_absoluteX="1dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/storyDescriptionEditText"
+            android:id="@+id/storyDescriptionEditStory"
             android:layout_width="match_parent"
             android:layout_height="178dp"
             android:hint="@string/description" />
@@ -85,7 +85,7 @@
         android:id="@+id/editStoryButton"
         android:layout_width="91dp"
         android:layout_height="wrap_content"
-        android:onClick="onCreateStoryClicked"
+        android:onClick="onEditStoryClicked"
         android:text="@string/editStory"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -103,4 +103,15 @@
         app:layout_constraintEnd_toStartOf="@+id/editStoryButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
+
+    <Button
+        android:id="@+id/completeStoryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onCompleteStoryClicked"
+        android:text="@string/completeStory"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/editStoryButton"
+        app:layout_constraintStart_toEndOf="@+id/editStoryBackButton"
+        app:layout_constraintTop_toBottomOf="@+id/editStoryButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

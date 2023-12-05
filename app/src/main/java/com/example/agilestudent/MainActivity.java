@@ -6,12 +6,14 @@ import androidx.room.Room;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.List;
 
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
     private Button newStoryButton;
     private Button createStoryBackButton;
     private Button createStoryButton;
+    private Button editStoryButton;
+    private Button editStoryBackButton;
+    private Button completeStoryButton;
+    private ImageView highFive;
     private ListView storyListView;
     private ProgressBar progressBar;
     private TextView welcomeMessage;
@@ -35,6 +41,12 @@ public class MainActivity extends AppCompatActivity {
     private TextInputEditText storyDescription;
     private TextInputEditText storyDuration;
     private TextInputEditText storyPurpose;
+    private TextInputEditText editStoryTitle;
+    private TextInputEditText editStoryDescription;
+    private TextInputEditText editStoryDuration;
+    private TextInputEditText editStoryPurpose;
+
+    private Story editStory;
 
     //Database
     private UserDatabase db;
@@ -58,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     public void switchToDashboard() {
         setContentView(R.layout.layout_dashboard);
         progressBar = findViewById(R.id.progressBar);
-        progressBar.setProgress(90);
+
 
         welcomeMessage = findViewById(R.id.welcomeMessage);
         welcomeMessage.setText("Welcome, " + activeUser.getUsername().toString());
@@ -68,23 +80,100 @@ public class MainActivity extends AppCompatActivity {
         storyListView = findViewById(R.id.storyListView);
         List<Story> storyList = db.storyDao().getStoriesByUserId(activeUser.getUserId());
 
+        int completed = 0;
+        for(Story s: storyList) {
+            if(s.isComplete()) completed++;
+        }
+        progressBar.setProgress((completed * 100) / storyList.size());
         String[] storyArray = new String[storyList.size()];
         for(int i = 0; i < storyList.size(); i++) {
             storyArray[i] = "STORY" + storyList.get(i).getStoryId() + ": " + storyList.get(i).getTitle();
+            if(storyList.get(i).isComplete()) {
+                storyArray[i] += " --> COMPLETED";
+            }
         }
         ArrayAdapter<String> stories = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, storyArray);
         stories.setDropDownViewResource(R.layout.layout_dashboard);
         storyListView.setAdapter(stories);
+        storyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String storyNum = ((TextView)view).getText().toString();
+                storyNum = storyNum.substring(0, storyNum.indexOf(':'));
+                storyNum = storyNum.substring(storyNum.indexOf('Y') + 1);
+
+                for(Story s : storyList) {
+                    if(s.getStoryId() == Integer.parseInt(storyNum)) {
+                        switchToEditStory(s);
+                    }
+                }
+            }
+        });
     }
 
     public void switchToCreateStory() {
         setContentView(R.layout.layout_create_story);
-        storyTitle = findViewById(R.id.storyTitleEditStory);
-        storyDescription = findViewById(R.id.storyDescriptionEditText);
-        storyDuration = findViewById(R.id.storyDurationEditStory);
-        storyPurpose = findViewById(R.id.storyPurposeEditStory);
-        createStoryButton = findViewById(R.id.editStoryButton);
-        createStoryBackButton = findViewById(R.id.editStoryBackButton);
+        storyTitle = findViewById(R.id.storyTitleCreateStory);
+        storyDescription = findViewById(R.id.storyDescriptionCreateStory);
+        storyDuration = findViewById(R.id.storyDurationCreateStory);
+        storyPurpose = findViewById(R.id.storyPurposeCreateStory);
+        createStoryButton = findViewById(R.id.createStoryButton);
+        createStoryBackButton = findViewById(R.id.createStoryBackButton);
+    }
+
+    public void switchToEditStory(Story storyToEdit) {
+        setContentView(R.layout.layout_edit_story);
+        editStoryTitle = findViewById(R.id.storyTitleEditStory);
+        editStoryDescription = findViewById(R.id.storyDescriptionEditStory);
+        editStoryDuration = findViewById(R.id.storyDurationEditStory);
+        editStoryPurpose = findViewById(R.id.storyPurposeEditStory);
+        editStoryButton = findViewById(R.id.editStoryButton);
+        editStoryBackButton = findViewById(R.id.editStoryBackButton);
+        completeStoryButton = findViewById(R.id.completeStoryButton);
+
+        if(storyToEdit.isComplete()) {
+            completeStoryButton.setText(R.string.undoComplete);
+        } else {
+            completeStoryButton.setText(R.string.completeStory);
+        }
+
+        editStoryTitle.setText(storyToEdit.getTitle());
+        editStoryDescription.setText(storyToEdit.getDescription());
+        editStoryDuration.setText(storyToEdit.getDuration() + "");
+        editStoryPurpose.setText(storyToEdit.getPurpose());
+
+        editStory = storyToEdit;
+    }
+
+    public void switchToHighFive() {
+        setContentView(R.layout.layout_high_five);
+        highFive = findViewById(R.id.highFive);
+    }
+
+    public void onHighFive(View view) {
+        switchToDashboard();
+    }
+
+    public void onEditStoryClicked(View view) {
+        editStory.setTitle(editStoryTitle.getText().toString());
+        editStory.setDescription(editStoryDescription.getText().toString());
+        editStory.setDuration(Integer.parseInt(editStoryDuration.getText().toString()));
+        editStory.setPurpose(editStoryPurpose.getText().toString());
+        db.storyDao().updateStory(editStory);
+        editStory = null;
+        switchToDashboard();
+    }
+
+    public void onCompleteStoryClicked(View view) {
+        editStory.setComplete(!editStory.isComplete());
+        db.storyDao().updateStory(editStory);
+        if(editStory.isComplete()) {
+            editStory = null;
+            switchToHighFive();
+        } else {
+            editStory = null;
+            switchToDashboard();
+        }
     }
 
     public void onCreateStoryClicked(View view) {
