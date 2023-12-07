@@ -106,12 +106,49 @@
 
     <Button
         android:id="@+id/completeStoryButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="112dp"
+        android:layout_height="56dp"
         android:onClick="onCompleteStoryClicked"
         android:text="@string/completeStory"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/editStoryButton"
         app:layout_constraintStart_toEndOf="@+id/editStoryBackButton"
         app:layout_constraintTop_toBottomOf="@+id/editStoryButton" />
+
+    <Button
+        android:id="@+id/deleteStoryButton"
+        android:layout_width="91dp"
+        android:layout_height="53dp"
+        android:backgroundTint="#FF0404"
+        android:onClick="onDeleteStoryClicked"
+        android:text="@string/deleteStory"
+        app:iconTint="#DD0303"
+        app:layout_constraintBottom_toBottomOf="@+id/completeStoryButton"
+        app:layout_constraintEnd_toStartOf="@+id/completeStoryButton"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/completeStoryButton" />
+
+    <TextView
+        android:id="@+id/storySprint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/editStoryBackButton"
+        app:layout_constraintEnd_toEndOf="@+id/deleteStoryButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout3"
+        app:layout_constraintVertical_bias="0.07999998" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="118dp"
+        android:layout_height="70dp"
+        android:onClick="onPullInClicked"
+        android:text="@string/pullStory"
+        app:layout_constraintBottom_toBottomOf="@+id/completeStoryButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toEndOf="@+id/completeStoryButton"
+        app:layout_constraintTop_toTopOf="@+id/completeStoryButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

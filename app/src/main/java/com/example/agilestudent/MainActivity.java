@@ -11,11 +11,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,10 +37,16 @@ public class MainActivity extends AppCompatActivity {
     private Button editStoryButton;
     private Button editStoryBackButton;
     private Button completeStoryButton;
+    private Button deleteStoryButton;
     private ImageView highFive;
     private ListView storyListView;
+    private Spinner purposeSpinner;
+    private Spinner sprintSpinner;
     private ProgressBar progressBar;
     private TextView welcomeMessage;
+    private TextView currentSprint;
+    private TextView storySprint;
+    private TextView minutesCompleted;
     private TextInputEditText storyTitle;
     private TextInputEditText storyDescription;
     private TextInputEditText storyDuration;
@@ -63,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
 
         db = Room.databaseBuilder(getApplicationContext(), UserDatabase.class, "user").allowMainThreadQueries().fallbackToDestructiveMigration().build();
-
+        Log.d("WEEK", getCurrentSprint() + "");
 
     }
 
@@ -74,41 +84,120 @@ public class MainActivity extends AppCompatActivity {
 
         welcomeMessage = findViewById(R.id.welcomeMessage);
         welcomeMessage.setText("Welcome, " + activeUser.getUsername().toString());
+        currentSprint = findViewById(R.id.currentSprint);
+        currentSprint.setText("Current Sprint: Sprint " + getCurrentSprint());
+
+        minutesCompleted = findViewById(R.id.minutesCompleted);
 
         newStoryButton = findViewById(R.id.newStoryButton);
 
         storyListView = findViewById(R.id.storyListView);
+        purposeSpinner = findViewById(R.id.purposeSpinner);
+        sprintSpinner = findViewById(R.id.sprintSpinner);
         List<Story> storyList = db.storyDao().getStoriesByUserId(activeUser.getUserId());
 
         int completed = 0;
-        for(Story s: storyList) {
-            if(s.isComplete()) completed++;
+        int totalDuration = 0;
+        ArrayList<String> purposes = new ArrayList<>();
+        ArrayList<String> sprints = new ArrayList<>();
+        for (Story s : storyList) {
+            if (s.isComplete()) completed += s.getDuration();
+            totalDuration += s.getDuration();
+            if(!purposes.contains(s.getPurpose())) purposes.add(s.getPurpose());
+            if(!sprints.contains(s.getSprint() + "")) sprints.add(s.getSprint() + "");
         }
-        progressBar.setProgress((completed * 100) / storyList.size());
         String[] storyArray = new String[storyList.size()];
-        for(int i = 0; i < storyList.size(); i++) {
-            storyArray[i] = "STORY" + storyList.get(i).getStoryId() + ": " + storyList.get(i).getTitle();
-            if(storyList.get(i).isComplete()) {
-                storyArray[i] += " --> COMPLETED";
+        String[] purposeArray = new String[purposes.size() + 1];
+        String[] sprintArray = new String[sprints.size() + 1];
+        if (storyList.size() > 0) {
+            progressBar.setProgress((completed * 100) / totalDuration);
+            minutesCompleted.setText("Minutes completed: " + completed + "/" + totalDuration);
+            for (int i = 0; i < storyList.size(); i++) {
+                storyArray[i] = "STORY" + storyList.get(i).getStoryId() + ": " + storyList.get(i).getTitle();
+                if (storyList.get(i).isComplete()) {
+                    storyArray[i] += " --> COMPLETED";
+                }
             }
+        } else {
+            storyArray = new String[1];
+            storyArray[0] = "No active stories.";
         }
+
+        if(purposes.size() > 0) {
+            purposeArray[0] = "All purposes";
+            for(int i = 1; i < purposes.size() + 1; i++) {
+                purposeArray[i] = purposes.get(i - 1).equals("")? "No purpose" : purposes.get(i - 1);
+            }
+        } else {
+            purposeArray = new String[1];
+            purposeArray[0] = "No active stories.";
+        }
+
+        if(sprints.size() > 0) {
+            sprintArray[0] = "All Sprints";
+            for(int i = 1; i < sprints.size() + 1; i++) {
+                sprintArray[i] = "Sprint " + sprints.get(i - 1);
+            }
+        } else {
+            sprintArray = new String[1];
+            sprintArray[0] = "No active stories.";
+        }
+
         ArrayAdapter<String> stories = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, storyArray);
         stories.setDropDownViewResource(R.layout.layout_dashboard);
         storyListView.setAdapter(stories);
-        storyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String storyNum = ((TextView)view).getText().toString();
-                storyNum = storyNum.substring(0, storyNum.indexOf(':'));
-                storyNum = storyNum.substring(storyNum.indexOf('Y') + 1);
+        if(storyList.size() > 0) {
+            storyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String storyNum = ((TextView) view).getText().toString();
+                    storyNum = storyNum.substring(0, storyNum.indexOf(':'));
+                    storyNum = storyNum.substring(storyNum.indexOf('Y') + 1);
 
-                for(Story s : storyList) {
-                    if(s.getStoryId() == Integer.parseInt(storyNum)) {
-                        switchToEditStory(s);
+                    for (Story s : storyList) {
+                        if (s.getStoryId() == Integer.parseInt(storyNum)) {
+                            switchToEditStory(s);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+
+        ArrayAdapter<String> purposeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, purposeArray);
+        purposeAdapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
+        purposeSpinner.setAdapter(purposeAdapter);
+        if(purposes.size() > 0) {
+            purposeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String purpose = ((TextView)view).getText().toString();
+                    updateListView(purpose, "purpose");
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+        }
+
+        ArrayAdapter<String> sprintAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, sprintArray);
+        sprintAdapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
+        sprintSpinner.setAdapter(sprintAdapter);
+        if(sprints.size() > 0) {
+            sprintSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String sprint = ((TextView)view).getText().toString();
+                    updateListView(sprint, "sprint");
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+        }
     }
 
     public void switchToCreateStory() {
@@ -130,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
         editStoryButton = findViewById(R.id.editStoryButton);
         editStoryBackButton = findViewById(R.id.editStoryBackButton);
         completeStoryButton = findViewById(R.id.completeStoryButton);
+        deleteStoryButton = findViewById(R.id.deleteStoryButton);
+        storySprint = findViewById(R.id.storySprint);
 
         if(storyToEdit.isComplete()) {
             completeStoryButton.setText(R.string.undoComplete);
@@ -141,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
         editStoryDescription.setText(storyToEdit.getDescription());
         editStoryDuration.setText(storyToEdit.getDuration() + "");
         editStoryPurpose.setText(storyToEdit.getPurpose());
+        storySprint.setText("Sprint: " + storyToEdit.getSprint());
 
         editStory = storyToEdit;
     }
@@ -157,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
     public void onEditStoryClicked(View view) {
         editStory.setTitle(editStoryTitle.getText().toString());
         editStory.setDescription(editStoryDescription.getText().toString());
-        editStory.setDuration(Integer.parseInt(editStoryDuration.getText().toString()));
+        editStory.setDuration(editStoryDuration.getText().toString().equals("")? 0 : Integer.parseInt(editStoryDuration.getText().toString()));
         editStory.setPurpose(editStoryPurpose.getText().toString());
         db.storyDao().updateStory(editStory);
         editStory = null;
@@ -183,12 +275,19 @@ public class MainActivity extends AppCompatActivity {
         int intDuration = Integer.parseInt(duration);
         String purpose = storyPurpose.getText().toString();
 
-        Story story = new Story(title, description, 1, intDuration, purpose, activeUser.getUserId());
+
+        Story story = new Story(title, description, getCurrentSprint(), intDuration, purpose, activeUser.getUserId());
 
         Log.d("Story Insert", "Insert story with userId: " + story.getUserId());
         db.storyDao().insertStory(story);
 
 
+        switchToDashboard();
+    }
+
+    public void onDeleteStoryClicked(View view) {
+        db.storyDao().deleteStory(editStory);
+        editStory = null;
         switchToDashboard();
     }
 
@@ -198,6 +297,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void onNewStoryClicked(View view) {
         switchToCreateStory();
+    }
+
+    public void onPullInClicked(View view) {
+        editStory.setSprint(getCurrentSprint());
+        db.storyDao().updateStory(editStory);
+        switchToDashboard();
     }
 
     public void onLoginClicked(View view) {
@@ -222,5 +327,103 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    public void updateListView(String filter, String type) {
+        String lowerFilter = filter.toLowerCase();
+
+        if(type.equals("purpose")) {
+
+            List<Story> storyList;
+            if(lowerFilter.equals("all purposes")) {
+                storyList = db.storyDao().getStoriesByUserId(activeUser.getUserId());
+            } else {
+                storyList = db.storyDao().getStoriesByPurpose(activeUser.getUserId(), lowerFilter.equals("no purpose")? "": lowerFilter);
+            }
+
+            String[] storyArray = new String[storyList.size()];
+            if (storyList.size() > 0) {
+                for (int i = 0; i < storyList.size(); i++) {
+                    storyArray[i] = "STORY" + storyList.get(i).getStoryId() + ": " + storyList.get(i).getTitle();
+                    if (storyList.get(i).isComplete()) {
+                        storyArray[i] += " --> COMPLETED";
+                    }
+                }
+            } else {
+                storyArray = new String[1];
+                storyArray[0] = "No active stories.";
+            }
+            storyListView = findViewById(R.id.storyListView);
+            ArrayAdapter<String> stories = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, storyArray);
+            stories.setDropDownViewResource(R.layout.layout_dashboard);
+            storyListView.setAdapter(stories);
+            if(storyList.size() > 0) {
+                storyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String storyNum = ((TextView) view).getText().toString();
+                        storyNum = storyNum.substring(0, storyNum.indexOf(':'));
+                        storyNum = storyNum.substring(storyNum.indexOf('Y') + 1);
+
+                        for (Story s : storyList) {
+                            if (s.getStoryId() == Integer.parseInt(storyNum)) {
+                                switchToEditStory(s);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        if(type.equals("sprint")) {
+
+            List<Story> storyList;
+            if(lowerFilter.equals("all sprints")) {
+                storyList = db.storyDao().getStoriesByUserId(activeUser.getUserId());
+            } else {
+                lowerFilter = lowerFilter.substring(lowerFilter.indexOf(' ') + 1);
+                storyList = db.storyDao().getStoriesBySprint(activeUser.getUserId(), Integer.parseInt(lowerFilter));
+            }
+
+            String[] storyArray = new String[storyList.size()];
+            if (storyList.size() > 0) {
+                for (int i = 0; i < storyList.size(); i++) {
+                    storyArray[i] = "STORY" + storyList.get(i).getStoryId() + ": " + storyList.get(i).getTitle();
+                    if (storyList.get(i).isComplete()) {
+                        storyArray[i] += " --> COMPLETED";
+                    }
+                }
+            } else {
+                storyArray = new String[1];
+                storyArray[0] = "No active stories.";
+            }
+            storyListView = findViewById(R.id.storyListView);
+            ArrayAdapter<String> stories = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, storyArray);
+            stories.setDropDownViewResource(R.layout.layout_dashboard);
+            storyListView.setAdapter(stories);
+            if(storyList.size() > 0) {
+                storyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String storyNum = ((TextView) view).getText().toString();
+                        storyNum = storyNum.substring(0, storyNum.indexOf(':'));
+                        storyNum = storyNum.substring(storyNum.indexOf('Y') + 1);
+
+                        for (Story s : storyList) {
+                            if (s.getStoryId() == Integer.parseInt(storyNum)) {
+                                switchToEditStory(s);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+
+    }
+
+    private int getCurrentSprint() {
+        Calendar today = Calendar.getInstance();
+        return today.get(Calendar.WEEK_OF_YEAR);
     }
 }
