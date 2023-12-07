@@ -14,7 +14,9 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -242,8 +244,68 @@ public class MainActivity extends AppCompatActivity {
         highFive = findViewById(R.id.highFive);
     }
 
+    public void switchToCurrentSprintReport() {
+        setContentView(R.layout.layout_current_report);
+        ProgressBar bar = findViewById(R.id.currentSprintProgressBar);
+        List<Story> storyList = db.storyDao().getStoriesBySprint(activeUser.getUserId(), getCurrentSprint());
+        int completedDuration = 0;
+        int totalDuration = 0;
+        int completedStories = 0;
+        HashMap<String, Integer> purposeDurationMap = new HashMap<>();
+        Story longest = new Story("", "", 0, 0, "", -1);
+        for(Story s: storyList) {
+            if(s.isComplete()) {
+                completedDuration += s.getDuration();
+                completedStories++;
+            }
+            totalDuration += s.getDuration();
+            if(!s.isComplete() && s.getDuration() > longest.getDuration()) {
+                longest = s;
+            }
+
+            if(!purposeDurationMap.containsKey(s.getPurpose())) {
+                purposeDurationMap.put(s.getPurpose(), s.getDuration());
+            } else {
+                purposeDurationMap.replace(s.getPurpose(), purposeDurationMap.get(s.getPurpose()) + s.getDuration());
+            }
+        }
+        int remainingDuration = totalDuration - completedDuration;
+        int remainingStories = storyList.size() - completedStories;
+
+        bar.setProgress(completedDuration * 100 / totalDuration);
+        TextView progress = findViewById(R.id.currentSprintProgressText);
+        progress.setText(completedDuration + "/" + totalDuration);
+
+        TextView storiesRemaining = findViewById(R.id.storiesRemaining);
+        storiesRemaining.setText("Stories Remaining: " + remainingStories);
+
+        TextView minutesRemaining = findViewById(R.id.minutesRemaining);
+        minutesRemaining.setText("Minutes Remaining: " + remainingDuration);
+
+        TextView longestStoryRemaining = findViewById(R.id.longestStoryRemaining);
+        longestStoryRemaining.setText("Longest Remaining Story: STORY" + longest.getStoryId() + ", " + longest.getDuration() + " minutes");
+
+        TextView averageStoryDuration = findViewById(R.id.averageStoryDuration);
+        averageStoryDuration.setText("Average Remaining Story Duration: " + ((double)remainingDuration / remainingStories));
+
+        TextView biggestPurpose = findViewById(R.id.biggestPurpose);
+        int maxDuration = -1;
+        String maxPurpose = "";
+        for(Map.Entry kv : purposeDurationMap.entrySet()) {
+            if((Integer)kv.getValue() > maxDuration) {
+                maxDuration = (Integer)kv.getValue();
+                maxPurpose = (String)kv.getKey();
+            }
+        }
+        biggestPurpose.setText("Longest Duration Purpose: " + maxPurpose + ", " + maxDuration + " minutes");
+    }
+
     public void onHighFive(View view) {
         switchToDashboard();
+    }
+
+    public void onCurrentReportClicked(View view) {
+        switchToCurrentSprintReport();
     }
 
     public void onEditStoryClicked(View view) {

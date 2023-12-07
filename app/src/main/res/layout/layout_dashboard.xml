@@ -93,4 +93,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/purposeSpinner" />
 
+    <Button
+        android:id="@+id/currentSprintReportButton"
+        android:layout_width="99dp"
+        android:layout_height="71dp"
+        android:onClick="onCurrentReportClicked"
+        android:text="@string/currentSprintReport"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/newStoryButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/newStoryButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

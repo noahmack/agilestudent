@@ -18,4 +18,6 @@
     <string name="pullStory">Pull To Current Sprint</string>
     <string name="undoComplete">Undo Complete</string>
     <string name="highFive">High Five!</string>
+    <string name="currentSprint">Current Sprint:</string>
+    <string name="currentSprintReport">Current Sprint Report</string>
 </resources>
