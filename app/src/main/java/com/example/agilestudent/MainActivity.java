@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -244,60 +243,363 @@ public class MainActivity extends AppCompatActivity {
         highFive = findViewById(R.id.highFive);
     }
 
-    public void switchToCurrentSprintReport() {
-        setContentView(R.layout.layout_current_report);
-        ProgressBar bar = findViewById(R.id.currentSprintProgressBar);
-        List<Story> storyList = db.storyDao().getStoriesBySprint(activeUser.getUserId(), getCurrentSprint());
-        int completedDuration = 0;
-        int totalDuration = 0;
-        int completedStories = 0;
-        HashMap<String, Integer> purposeDurationMap = new HashMap<>();
-        Story longest = new Story("", "", 0, 0, "", -1);
-        for(Story s: storyList) {
-            if(s.isComplete()) {
-                completedDuration += s.getDuration();
-                completedStories++;
+    public void switchToSprintReport(String type) {
+        if(type.equals("current")) {
+            setContentView(R.layout.layout_current_report);
+            TextView text = findViewById(R.id.currentOrPrevious);
+            text.setText(R.string.currentSprint);
+            ProgressBar bar = findViewById(R.id.currentSprintProgressBar);
+            List<Story> storyList = db.storyDao().getStoriesBySprint(activeUser.getUserId(), getCurrentSprint());
+            int completedDuration = 0;
+            int totalDuration = 0;
+            int completedStories = 0;
+            HashMap<String, Integer> purposeDurationMap = new HashMap<>();
+            Story longest = new Story("", "", 0, 0, "", -1);
+            for (Story s : storyList) {
+                if (s.isComplete()) {
+                    completedDuration += s.getDuration();
+                    completedStories++;
+                }
+                totalDuration += s.getDuration();
+                if (!s.isComplete() && s.getDuration() > longest.getDuration()) {
+                    longest = s;
+                }
+
+                if (!purposeDurationMap.containsKey(s.getPurpose())) {
+                    purposeDurationMap.put(s.getPurpose(), s.getDuration());
+                } else {
+                    purposeDurationMap.replace(s.getPurpose(), purposeDurationMap.get(s.getPurpose()) + s.getDuration());
+                }
             }
-            totalDuration += s.getDuration();
-            if(!s.isComplete() && s.getDuration() > longest.getDuration()) {
-                longest = s;
+            int remainingDuration = totalDuration - completedDuration;
+            int remainingStories = storyList.size() - completedStories;
+
+            bar.setProgress(completedDuration * 100 / totalDuration);
+            TextView progress = findViewById(R.id.currentSprintProgressText);
+            progress.setText(completedDuration + "/" + totalDuration);
+
+            TextView storiesRemaining = findViewById(R.id.storiesRemaining);
+            storiesRemaining.setText("Stories Remaining: " + remainingStories);
+
+            TextView minutesRemaining = findViewById(R.id.minutesRemaining);
+            minutesRemaining.setText("Minutes Remaining: " + remainingDuration);
+
+            TextView longestStoryRemaining = findViewById(R.id.longestStoryRemaining);
+            longestStoryRemaining.setText("Longest Remaining Story: STORY" + longest.getStoryId() + ", " + longest.getDuration() + " minutes");
+            if(longest.getStoryId() == 0) longestStoryRemaining.setText("Longest Remaining Story: N/A");
+
+            TextView averageStoryDuration = findViewById(R.id.averageStoryDuration);
+            averageStoryDuration.setText("Average Remaining Story Duration: " + ((double) remainingDuration / remainingStories));
+            if(remainingStories == 0) averageStoryDuration.setText("Average Remaining Story Duration: N/A");
+
+            TextView biggestPurpose = findViewById(R.id.biggestPurpose);
+            int maxDuration = -1;
+            String maxPurpose = "";
+            for (Map.Entry kv : purposeDurationMap.entrySet()) {
+                if ((Integer) kv.getValue() > maxDuration) {
+                    maxDuration = (Integer) kv.getValue();
+                    maxPurpose = (String) kv.getKey();
+                }
+            }
+            biggestPurpose.setText("Longest Duration Purpose: " + maxPurpose + ", " + maxDuration + " minutes");
+        }
+
+        if(type.equals("previous")) {
+            setContentView(R.layout.layout_current_report);
+            TextView text = findViewById(R.id.currentOrPrevious);
+            text.setText("Last Sprint:");
+            ProgressBar bar = findViewById(R.id.currentSprintProgressBar);
+            List<Story> storyList = db.storyDao().getStoriesBySprint(activeUser.getUserId(), getCurrentSprint() - 1);
+            int completedDuration = 0;
+            int totalDuration = 0;
+            int completedStories = 0;
+            HashMap<String, Integer> purposeDurationMap = new HashMap<>();
+            Story longest = new Story("", "", 0, 0, "", -1);
+            for (Story s : storyList) {
+                if (s.isComplete()) {
+                    completedDuration += s.getDuration();
+                    completedStories++;
+                }
+                totalDuration += s.getDuration();
+                if (s.isComplete() && s.getDuration() > longest.getDuration()) {
+                    longest = s;
+                }
+
+                if (!purposeDurationMap.containsKey(s.getPurpose())) {
+                    purposeDurationMap.put(s.getPurpose(), s.getDuration());
+                } else {
+                    purposeDurationMap.replace(s.getPurpose(), purposeDurationMap.get(s.getPurpose()) + s.getDuration());
+                }
+            }
+            int remainingDuration = totalDuration - completedDuration;
+            int remainingStories = storyList.size() - completedStories;
+
+            bar.setProgress(totalDuration == 0? 0 : completedDuration * 100 / totalDuration);
+            TextView progress = findViewById(R.id.currentSprintProgressText);
+            progress.setText(completedDuration + "/" + totalDuration);
+
+            TextView storiesRemaining = findViewById(R.id.storiesRemaining);
+            storiesRemaining.setText("Stories Completed: " + completedStories);
+
+            TextView minutesRemaining = findViewById(R.id.minutesRemaining);
+            minutesRemaining.setText("Minutes Completed: " + completedDuration);
+
+            TextView longestStoryRemaining = findViewById(R.id.longestStoryRemaining);
+            longestStoryRemaining.setText("Longest Completed Story: STORY" + longest.getStoryId() + ", " + longest.getDuration() + " minutes");
+
+            TextView averageStoryDuration = findViewById(R.id.averageStoryDuration);
+            averageStoryDuration.setText("Average Completed Story Duration: " + ((double) completedDuration / completedStories));
+
+            TextView biggestPurpose = findViewById(R.id.biggestPurpose);
+            int maxDuration = -1;
+            String maxPurpose = "";
+            for (Map.Entry kv : purposeDurationMap.entrySet()) {
+                if ((Integer) kv.getValue() > maxDuration) {
+                    maxDuration = (Integer) kv.getValue();
+                    maxPurpose = (String) kv.getKey();
+                }
+            }
+            biggestPurpose.setText("Longest Duration Purpose: " + maxPurpose + ", " + maxDuration + " minutes");
+        }
+
+        if(type.equals("past")) {
+            setContentView(R.layout.layout_current_report);
+            TextView text = findViewById(R.id.currentOrPrevious);
+            text.setText("Completed Stories:");
+            ProgressBar bar = findViewById(R.id.currentSprintProgressBar);
+            List<Story> storyList = db.storyDao().getCompletedStories(activeUser.getUserId());
+            int totalDuration = 0;
+            int completedStories = storyList.size();
+            HashMap<String, Integer> purposeDurationMap = new HashMap<>();
+            Story longest = new Story("", "", 0, 0, "", -1);
+            for (Story s : storyList) {
+                totalDuration += s.getDuration();
+                if (s.getDuration() > longest.getDuration()) {
+                    longest = s;
+                }
+
+                if (!purposeDurationMap.containsKey(s.getPurpose())) {
+                    purposeDurationMap.put(s.getPurpose(), s.getDuration());
+                } else {
+                    purposeDurationMap.replace(s.getPurpose(), purposeDurationMap.get(s.getPurpose()) + s.getDuration());
+                }
             }
 
-            if(!purposeDurationMap.containsKey(s.getPurpose())) {
-                purposeDurationMap.put(s.getPurpose(), s.getDuration());
-            } else {
-                purposeDurationMap.replace(s.getPurpose(), purposeDurationMap.get(s.getPurpose()) + s.getDuration());
+            bar.setProgress(100);
+            TextView progress = findViewById(R.id.currentSprintProgressText);
+            progress.setText(totalDuration + "/" + totalDuration);
+
+            TextView storiesRemaining = findViewById(R.id.storiesRemaining);
+            storiesRemaining.setText("Stories Completed: " + completedStories);
+
+            TextView minutesRemaining = findViewById(R.id.minutesRemaining);
+            minutesRemaining.setText("Minutes Completed: " + totalDuration);
+
+            TextView longestStoryRemaining = findViewById(R.id.longestStoryRemaining);
+            longestStoryRemaining.setText("Longest Completed Story: STORY" + longest.getStoryId() + ", " + longest.getDuration() + " minutes");
+
+            TextView averageStoryDuration = findViewById(R.id.averageStoryDuration);
+            averageStoryDuration.setText("Average Completed Story Duration: " + ((double) totalDuration / completedStories));
+
+            TextView biggestPurpose = findViewById(R.id.biggestPurpose);
+            int maxDuration = -1;
+            String maxPurpose = "";
+            for (Map.Entry kv : purposeDurationMap.entrySet()) {
+                if ((Integer) kv.getValue() > maxDuration) {
+                    maxDuration = (Integer) kv.getValue();
+                    maxPurpose = (String) kv.getKey();
+                }
+            }
+            biggestPurpose.setText("Longest Duration Purpose: " + maxPurpose + ", " + maxDuration + " minutes");
+        }
+    }
+
+    public void switchToAchievements() {
+        setContentView(R.layout.layout_achievements);
+        int[] completionistLevels = {1, 10, 100, 1000, 10000};
+        int[] sprinterLevels = {1, 10, 30, 52, 250};
+        int[] perseveranceLevels = {30, 60, 120, 240, 600};
+
+        int completedStories = db.storyDao().getCompletedStories(activeUser.getUserId()).size();
+        List<Story> storyList = db.storyDao().getStoriesByUserId(activeUser.getUserId());
+        int maxSprint = 0; int minSprint = Integer.MAX_VALUE;
+        int longestStory = 0;
+        for(Story s : storyList) {
+            if(s.getSprint() < minSprint) minSprint = s.getSprint();
+            if(s.getSprint() > maxSprint) maxSprint= s.getSprint();
+            if(s.getDuration() > longestStory) longestStory = s.getDuration();
+        }
+        if(storyList.size() == 0) {
+            minSprint = 0;
+        }
+        int numSprintsCompleted = maxSprint - minSprint;
+        int sprinterLevel = 0;
+        int completionistLevel = 0;
+        int perseveranceLevel = 0;
+
+        for(int i = 0; i < completionistLevels.length; i++) {
+            if(completedStories >= completionistLevels[i]) {
+                completionistLevel = i + 1;
             }
         }
-        int remainingDuration = totalDuration - completedDuration;
-        int remainingStories = storyList.size() - completedStories;
-
-        bar.setProgress(completedDuration * 100 / totalDuration);
-        TextView progress = findViewById(R.id.currentSprintProgressText);
-        progress.setText(completedDuration + "/" + totalDuration);
-
-        TextView storiesRemaining = findViewById(R.id.storiesRemaining);
-        storiesRemaining.setText("Stories Remaining: " + remainingStories);
-
-        TextView minutesRemaining = findViewById(R.id.minutesRemaining);
-        minutesRemaining.setText("Minutes Remaining: " + remainingDuration);
-
-        TextView longestStoryRemaining = findViewById(R.id.longestStoryRemaining);
-        longestStoryRemaining.setText("Longest Remaining Story: STORY" + longest.getStoryId() + ", " + longest.getDuration() + " minutes");
-
-        TextView averageStoryDuration = findViewById(R.id.averageStoryDuration);
-        averageStoryDuration.setText("Average Remaining Story Duration: " + ((double)remainingDuration / remainingStories));
-
-        TextView biggestPurpose = findViewById(R.id.biggestPurpose);
-        int maxDuration = -1;
-        String maxPurpose = "";
-        for(Map.Entry kv : purposeDurationMap.entrySet()) {
-            if((Integer)kv.getValue() > maxDuration) {
-                maxDuration = (Integer)kv.getValue();
-                maxPurpose = (String)kv.getKey();
+        for(int i = 0; i < sprinterLevels.length; i++) {
+            if(numSprintsCompleted >= sprinterLevels[i]) {
+                sprinterLevel = i + 1;
             }
         }
-        biggestPurpose.setText("Longest Duration Purpose: " + maxPurpose + ", " + maxDuration + " minutes");
+        for(int i = 0; i < perseveranceLevels.length; i++) {
+            if(longestStory >= perseveranceLevels[i]) {
+                perseveranceLevel = i + 1;
+            }
+        }
+
+        TextView completionistCurrent = findViewById(R.id.completionistCurrent);
+        TextView completionistNext = findViewById(R.id.completionistNext);
+        TextView sprinterCurrent = findViewById(R.id.sprinterCurrent);
+        TextView sprinterNext = findViewById(R.id.sprinterNext);
+        TextView perseveranceCurrent = findViewById(R.id.perseveranceCurrent);
+        TextView perseveranceNext = findViewById(R.id.perseveranceNext);
+        ProgressBar completionistProgressBar = findViewById(R.id.completionistProgressBar);
+        ProgressBar sprinterProgressBar = findViewById(R.id.sprinterProgressBar);
+        ProgressBar perseveranceProgressBar = findViewById(R.id.perseveranceProgressBar);
+        TextView completionistProgressText = findViewById(R.id.completionistProgressText);
+        TextView sprinterProgressText = findViewById(R.id.sprinterProgressText);
+        TextView perseveranceProgressText = findViewById(R.id.perseveranceProgressText);
+
+        switch(completionistLevel) {
+            case 0:
+                completionistCurrent.setText(R.string.completionist1Desc);
+                completionistNext.setText(R.string.completionist);
+                completionistProgressBar.setProgress(0);
+                completionistProgressText.setText("0/1");
+                break;
+            case 1:
+                completionistCurrent.setText(R.string.completionist2Desc);
+                completionistNext.setText(R.string.completionist1);
+                completionistProgressBar.setProgress(completedStories * 100 / completionistLevels[1]);
+                completionistProgressText.setText(completedStories + "/" + completionistLevels[1]);
+                break;
+            case 2:
+                completionistCurrent.setText(R.string.completionist3Desc);
+                completionistNext.setText(R.string.completionist2);
+                completionistProgressBar.setProgress(completedStories * 100 / completionistLevels[2]);
+                completionistProgressText.setText(completedStories + "/" + completionistLevels[2]);
+                break;
+            case 3:
+                completionistCurrent.setText(R.string.completionist4Desc);
+                completionistNext.setText(R.string.completionist3);
+                completionistProgressBar.setProgress(completedStories * 100 / completionistLevels[3]);
+                completionistProgressText.setText(completedStories + "/" + completionistLevels[3]);
+                break;
+            case 4:
+                completionistCurrent.setText(R.string.completionist5Desc);
+                completionistNext.setText(R.string.completionist4);
+                completionistProgressBar.setProgress(completedStories * 100 / completionistLevels[4]);
+                completionistProgressText.setText(completedStories + "/" + completionistLevels[4]);
+                break;
+            case 5:
+                completionistCurrent.setText(R.string.completionist5Desc);
+                completionistNext.setText(R.string.completionist5);
+                completionistProgressBar.setProgress(completedStories * 100 / completionistLevels[4]);
+                completionistProgressText.setText(completedStories + "/" + completionistLevels[4]);
+                break;
+            default:
+                completionistCurrent.setText(R.string.completionist1Desc);
+                completionistNext.setText(R.string.completionist);
+                completionistProgressBar.setProgress(0);
+                completionistProgressText.setText("0/1");
+                break;
+        }
+
+        switch(sprinterLevel) {
+            case 0:
+                sprinterCurrent.setText(R.string.sprinter1Desc);
+                sprinterNext.setText(R.string.sprinter);
+                sprinterProgressBar.setProgress(0);
+                sprinterProgressText.setText("0/1");
+                break;
+            case 1:
+                sprinterCurrent.setText(R.string.sprinter2Desc);
+                sprinterNext.setText(R.string.sprinter1);
+                sprinterProgressBar.setProgress(numSprintsCompleted * 100 / sprinterLevels[1]);
+                sprinterProgressText.setText(numSprintsCompleted + "/" + sprinterLevels[1]);
+                break;
+            case 2:
+                sprinterCurrent.setText(R.string.sprinter3Desc);
+                sprinterNext.setText(R.string.sprinter2);
+                sprinterProgressBar.setProgress(numSprintsCompleted * 100 / sprinterLevels[2]);
+                sprinterProgressText.setText(numSprintsCompleted + "/" + sprinterLevels[2]);
+                break;
+            case 3:
+                sprinterCurrent.setText(R.string.sprinter4Desc);
+                sprinterNext.setText(R.string.sprinter3);
+                sprinterProgressBar.setProgress(numSprintsCompleted * 100 / sprinterLevels[3]);
+                sprinterProgressText.setText(numSprintsCompleted + "/" + sprinterLevels[3]);
+                break;
+            case 4:
+                sprinterCurrent.setText(R.string.sprinter5Desc);
+                sprinterNext.setText(R.string.sprinter4);
+                sprinterProgressBar.setProgress(numSprintsCompleted * 100 / sprinterLevels[4]);
+                sprinterProgressText.setText(numSprintsCompleted + "/" + sprinterLevels[4]);
+                break;
+            case 5:
+                sprinterCurrent.setText(R.string.sprinter5Desc);
+                sprinterNext.setText(R.string.sprinter5);
+                sprinterProgressBar.setProgress(numSprintsCompleted * 100 / sprinterLevels[4]);
+                sprinterProgressText.setText(numSprintsCompleted + "/" + sprinterLevels[4]);
+                break;
+            default:
+                sprinterCurrent.setText(R.string.sprinter1Desc);
+                sprinterNext.setText(R.string.sprinter);
+                sprinterProgressBar.setProgress(0);
+                sprinterProgressText.setText("0/1");
+                break;
+        }
+
+        switch(perseveranceLevel) {
+            case 0:
+                perseveranceCurrent.setText(R.string.perseverance1Desc);
+                perseveranceNext.setText(R.string.perseverance);
+                perseveranceProgressBar.setProgress(0);
+                perseveranceProgressText.setText("0/30");
+                break;
+            case 1:
+                perseveranceCurrent.setText(R.string.perseverance2Desc);
+                perseveranceNext.setText(R.string.perseverance1);
+                perseveranceProgressBar.setProgress(longestStory * 100 / perseveranceLevels[1]);
+                perseveranceProgressText.setText(longestStory + "/" + perseveranceLevels[1]);
+                break;
+            case 2:
+                perseveranceCurrent.setText(R.string.perseverance3Desc);
+                perseveranceNext.setText(R.string.perseverance2);
+                perseveranceProgressBar.setProgress(longestStory * 100 / perseveranceLevels[2]);
+                perseveranceProgressText.setText(longestStory + "/" + perseveranceLevels[2]);
+                break;
+            case 3:
+                perseveranceCurrent.setText(R.string.perseverance4Desc);
+                perseveranceNext.setText(R.string.perseverance3);
+                perseveranceProgressBar.setProgress(longestStory * 100 / perseveranceLevels[3]);
+                perseveranceProgressText.setText(longestStory + "/" + perseveranceLevels[3]);
+                break;
+            case 4:
+                perseveranceCurrent.setText(R.string.perseverance5Desc);
+                perseveranceNext.setText(R.string.perseverance4);
+                perseveranceProgressBar.setProgress(longestStory * 100 / perseveranceLevels[4]);
+                perseveranceProgressText.setText(longestStory + "/" + perseveranceLevels[4]);
+                break;
+            case 5:
+                perseveranceCurrent.setText(R.string.perseverance5Desc);
+                perseveranceNext.setText(R.string.perseverance5);
+                perseveranceProgressBar.setProgress(longestStory * 100 / perseveranceLevels[4]);
+                perseveranceProgressText.setText(longestStory + "/" + perseveranceLevels[4]);
+                break;
+            default:
+                perseveranceCurrent.setText(R.string.perseverance1Desc);
+                perseveranceNext.setText(R.string.perseverance);
+                perseveranceProgressBar.setProgress(0);
+                perseveranceProgressText.setText("0/30");
+                break;
+        }
     }
 
     public void onHighFive(View view) {
@@ -305,7 +607,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onCurrentReportClicked(View view) {
-        switchToCurrentSprintReport();
+        switchToSprintReport("current");
+    }
+
+    public void onCompletedReportClicked(View view) {
+        switchToSprintReport("past");
+    }
+
+    public void onLastReportClicked(View view) {
+        switchToSprintReport("previous");
+    }
+
+    public void onAchievementsClicked(View view) {
+        switchToAchievements();
     }
 
     public void onEditStoryClicked(View view) {

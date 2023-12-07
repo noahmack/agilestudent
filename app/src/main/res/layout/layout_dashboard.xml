@@ -5,6 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/statsButton"
+        style="@android:style/Widget.DeviceDefault.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onAchievementsClicked"
+        android:text="@string/stats"
+        app:iconTint="#701717"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar"
+        app:layout_constraintVertical_bias="1.0" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
@@ -40,9 +55,10 @@
         app:iconTint="#701717"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressBar"
-        app:layout_constraintVertical_bias="0.95" />
+        app:layout_constraintVertical_bias="0.912" />
 
     <ListView
         android:id="@+id/storyListView"
@@ -82,7 +98,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/storyListView"
-        app:layout_constraintVertical_bias="0.47000003" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Spinner
         android:id="@+id/sprintSpinner"
@@ -101,7 +117,32 @@
         android:text="@string/currentSprintReport"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/newStoryButton"
+        app:layout_constraintHorizontal_bias="0.11"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/newStoryButton" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="119dp"
+        android:layout_height="73dp"
+        android:onClick="onCompletedReportClicked"
+        android:text="@string/completedStoriesReport"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toEndOf="@+id/newStoryButton"
+        app:layout_constraintTop_toTopOf="@+id/newStoryButton" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="168dp"
+        android:layout_height="41dp"
+        android:onClick="onLastReportClicked"
+        android:text="@string/lastSprintReport"
+        app:layout_constraintBottom_toTopOf="@+id/progressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.89"
+        app:layout_constraintStart_toEndOf="@+id/currentSprint"
+        app:layout_constraintTop_toBottomOf="@+id/welcomeMessage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

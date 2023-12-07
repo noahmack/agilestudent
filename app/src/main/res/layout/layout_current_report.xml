@@ -49,7 +49,7 @@
         app:layout_constraintVertical_bias="0.7" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/currentOrPrevious"
         android:layout_width="412dp"
         android:layout_height="60dp"
         android:text="@string/currentSprint"
@@ -70,7 +70,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView6"
+        app:layout_constraintTop_toTopOf="@+id/currentOrPrevious"
         app:layout_constraintVertical_bias="0.8" />
 
     <ProgressBar
@@ -81,7 +81,7 @@
         app:layout_constraintBottom_toTopOf="@+id/storiesRemaining"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/currentOrPrevious"
         app:layout_constraintVertical_bias="0.110000014" />
 
     <TextView

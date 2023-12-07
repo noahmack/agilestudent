@@ -17,7 +17,10 @@ public interface StoryDao {
     List<Story> getStoriesByPurpose(int userId, String purpose);
 
     @Query("SELECT * FROM story WHERE userId = :userId AND sprint = :sprint")
-    List<Story>getStoriesBySprint(int userId, int sprint);
+    List<Story> getStoriesBySprint(int userId, int sprint);
+
+    @Query("SELECT * FROM story WHERE userId = :userId AND isComplete = 1")
+    List<Story> getCompletedStories(int userId);
 
     @Insert
     void insertStory(Story story);

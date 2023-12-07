@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="404dp"
+        android:layout_height="88dp"
+        android:text="@string/stats"
+        android:textAlignment="center"
+        android:textSize="34sp"
+        android:typeface="monospace"
+        tools:layout_editor_absoluteX="3dp"
+        tools:layout_editor_absoluteY="1dp" />
+
+    <TextView
+        android:id="@+id/completionistCurrent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/completionist1Desc"
+        app:layout_constraintBottom_toTopOf="@+id/completionistProgressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.9" />
+
+    <ProgressBar
+        android:id="@+id/completionistProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="394dp"
+        android:layout_height="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.25" />
+
+    <ProgressBar
+        android:id="@+id/sprinterProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="393dp"
+        android:layout_height="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/completionistProgressBar"
+        app:layout_constraintStart_toStartOf="@+id/completionistProgressBar"
+        app:layout_constraintTop_toBottomOf="@+id/completionistProgressBar"
+        app:layout_constraintVertical_bias="0.29000002" />
+
+    <ProgressBar
+        android:id="@+id/perseveranceProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="393dp"
+        android:layout_height="23dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/sprinterProgressBar"
+        app:layout_constraintStart_toStartOf="@+id/sprinterProgressBar"
+        app:layout_constraintTop_toBottomOf="@+id/sprinterProgressBar" />
+
+    <TextView
+        android:id="@+id/sprinterCurrent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sprinter1Desc"
+        app:layout_constraintBottom_toTopOf="@+id/sprinterProgressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/completionistCurrent"
+        app:layout_constraintTop_toBottomOf="@+id/completionistProgressBar"
+        app:layout_constraintVertical_bias="0.9" />
+
+    <TextView
+        android:id="@+id/perseveranceCurrent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/perseverance1Desc"
+        app:layout_constraintBottom_toTopOf="@+id/perseveranceProgressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/completionistCurrent"
+        app:layout_constraintTop_toBottomOf="@+id/sprinterProgressBar"
+        app:layout_constraintVertical_bias="0.9" />
+
+    <TextView
+        android:id="@+id/completionistNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/completionist2"
+        app:layout_constraintBottom_toTopOf="@+id/sprinterProgressBar"
+        app:layout_constraintEnd_toEndOf="@+id/completionistProgressBar"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/completionistProgressBar"
+        app:layout_constraintVertical_bias="0.100000024" />
+
+    <TextView
+        android:id="@+id/sprinterNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sprinter2"
+        app:layout_constraintBottom_toTopOf="@+id/perseveranceProgressBar"
+        app:layout_constraintEnd_toEndOf="@+id/completionistNext"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sprinterProgressBar"
+        app:layout_constraintVertical_bias="0.100000024" />
+
+    <TextView
+        android:id="@+id/perseveranceNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/perseverance2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/sprinterNext"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/perseveranceProgressBar"
+        app:layout_constraintVertical_bias="0.100000024" />
+
+    <TextView
+        android:id="@+id/completionistProgressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/sprinterProgressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/completionistCurrent"
+        app:layout_constraintTop_toBottomOf="@+id/completionistProgressBar"
+        app:layout_constraintVertical_bias="0.100000024" />
+
+    <TextView
+        android:id="@+id/sprinterProgressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/perseveranceProgressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/sprinterCurrent"
+        app:layout_constraintTop_toBottomOf="@+id/sprinterProgressBar"
+        app:layout_constraintVertical_bias="0.100000024" />
+
+    <TextView
+        android:id="@+id/perseveranceProgressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/perseveranceCurrent"
+        app:layout_constraintTop_toBottomOf="@+id/perseveranceProgressBar"
+        app:layout_constraintVertical_bias="0.100000024" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onBackClicked"
+        android:text="@string/back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/perseveranceProgressBar" />
+</androidx.constraintlayout.widget.ConstraintLayout>
