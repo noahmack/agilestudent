@@ -427,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
         for(Story s : storyList) {
             if(s.getSprint() < minSprint) minSprint = s.getSprint();
             if(s.getSprint() > maxSprint) maxSprint= s.getSprint();
-            if(s.getDuration() > longestStory) longestStory = s.getDuration();
+            if(s.isComplete() && s.getDuration() > longestStory) longestStory = s.getDuration();
         }
         if(storyList.size() == 0) {
             minSprint = 0;
