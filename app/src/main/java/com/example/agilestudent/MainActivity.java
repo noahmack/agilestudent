@@ -57,14 +57,31 @@ public class MainActivity extends AppCompatActivity {
     private TextInputEditText editStoryDuration;
     private TextInputEditText editStoryPurpose;
 
+    /**
+     * Instance variable used for keeping track of the story to be edited.
+     */
     private Story editStory;
 
     //Database
+    /**
+     * Database object for database operations
+     */
     private UserDatabase db;
 
+    /**
+     * The current logged in user object
+     */
     private User activeUser;
 
-
+    /**
+     * Called when the activity is first created. This method initializes the activity's user interface,
+     * including setting the content view, finding and assigning views for username, password, and login button,
+     * and initializing the database using Room for user information.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     *                           Note: Otherwise, it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +95,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Switches the activity's content view to the dashboard layout, populates dashboard elements,
+     * and sets up listeners for purpose and sprint spinners to update the displayed story list accordingly.
+     * The method calculates and displays completion progress, active stories, and provides options
+     * to filter stories by purpose and sprint.
+     */
     public void switchToDashboard() {
         setContentView(R.layout.layout_dashboard);
         progressBar = findViewById(R.id.progressBar);
@@ -201,6 +224,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Switches the activity's content view to the create story layout and initializes
+     * views for creating a new story, including title, description, duration, purpose,
+     * and buttons for creating a story or navigating back.
+     */
     public void switchToCreateStory() {
         setContentView(R.layout.layout_create_story);
         storyTitle = findViewById(R.id.storyTitleCreateStory);
@@ -211,6 +239,14 @@ public class MainActivity extends AppCompatActivity {
         createStoryBackButton = findViewById(R.id.createStoryBackButton);
     }
 
+    /**
+     * Switches the activity's content view to the edit story layout, initializes views
+     * for editing an existing story, and populates the views with information from the
+     * provided `storyToEdit`. This method also handles buttons for editing, completing,
+     * and deleting the story.
+     *
+     * @param storyToEdit The Story object containing information about the story to be edited.
+     */
     public void switchToEditStory(Story storyToEdit) {
         setContentView(R.layout.layout_edit_story);
         editStoryTitle = findViewById(R.id.storyTitleEditStory);
@@ -238,11 +274,22 @@ public class MainActivity extends AppCompatActivity {
         editStory = storyToEdit;
     }
 
+    /**
+     * Switches the activity's content view to the high-five layout and initializes the
+     * view for displaying a high-five image.
+     */
     public void switchToHighFive() {
         setContentView(R.layout.layout_high_five);
         highFive = findViewById(R.id.highFive);
     }
 
+
+    /**
+     * Switches the activity's content view to the specified sprint report layout based on the type parameter.
+     * Initializes and populates views with relevant information for the current, previous, or past sprint report.
+     *
+     * @param type A string indicating the type of sprint report to display ("current", "previous", or "past").
+     */
     public void switchToSprintReport(String type) {
         if(type.equals("current")) {
             setContentView(R.layout.layout_current_report);
@@ -414,6 +461,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Switches the activity's content view to the achievements layout.
+     * Calculates and displays the user's achievements progress based on completed stories, sprints, and longest story.
+     * Updates progress bars and text views for completionist, sprinter, and perseverance achievements.
+     */
     public void switchToAchievements() {
         setContentView(R.layout.layout_achievements);
         int[] completionistLevels = {1, 10, 100, 1000, 10000};
@@ -602,26 +654,63 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Callback method invoked when the "High Five" button is clicked.
+     * Switches the current activity's content view to the dashboard layout.
+     *
+     * @param view The view that was clicked (in this case, the "High Five" button).
+     */
     public void onHighFive(View view) {
         switchToDashboard();
     }
 
+    /**
+     * Callback method invoked when the "Current Report" button is clicked.
+     * Switches the current activity's content view to the current sprint report layout.
+     *
+     * @param view The view that was clicked (in this case, the "Current Report" button).
+     */
     public void onCurrentReportClicked(View view) {
         switchToSprintReport("current");
     }
 
+    /**
+     * Callback method invoked when the "Completed Report" button is clicked.
+     * Switches the current activity's content view to the completed stories report layout.
+     *
+     * @param view The view that was clicked (in this case, the "Completed Report" button).
+     */
     public void onCompletedReportClicked(View view) {
         switchToSprintReport("past");
     }
 
+    /**
+     * Callback method invoked when the "Last Report" button is clicked.
+     * Switches the current activity's content view to the previous sprint report layout.
+     *
+     * @param view The view that was clicked (in this case, the "Last Report" button).
+     */
     public void onLastReportClicked(View view) {
         switchToSprintReport("previous");
     }
 
+    /**
+     * Callback method invoked when the "Achievements" button is clicked.
+     * Switches the current activity's content view to the achievements layout.
+     *
+     * @param view The view that was clicked (in this case, the "Achievements" button).
+     */
     public void onAchievementsClicked(View view) {
         switchToAchievements();
     }
 
+    /**
+     * Callback method invoked when the "Edit Story" button is clicked.
+     * Updates the details of the currently edited story based on the input fields,
+     * and switches the current activity's content view back to the dashboard.
+     *
+     * @param view The view that was clicked (in this case, the "Edit Story" button).
+     */
     public void onEditStoryClicked(View view) {
         editStory.setTitle(editStoryTitle.getText().toString());
         editStory.setDescription(editStoryDescription.getText().toString());
@@ -632,6 +721,14 @@ public class MainActivity extends AppCompatActivity {
         switchToDashboard();
     }
 
+    /**
+     * Callback method invoked when the "Complete Story" button is clicked.
+     * Toggles the completion status of the currently edited story, updates it in the database,
+     * and switches the current activity's content view either to the high-five layout (if completed)
+     * or back to the dashboard.
+     *
+     * @param view The view that was clicked (in this case, the "Complete Story" button).
+     */
     public void onCompleteStoryClicked(View view) {
         editStory.setComplete(!editStory.isComplete());
         db.storyDao().updateStory(editStory);
@@ -644,6 +741,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Callback method invoked when the "Create Story" button is clicked.
+     * Retrieves input values (title, description, duration, purpose) from the corresponding
+     * input fields, creates a new Story object, inserts it into the database, and switches
+     * the current activity's content view back to the dashboard.
+     *
+     * @param view The view that was clicked (in this case, the "Create Story" button).
+     */
     public void onCreateStoryClicked(View view) {
         String title = storyTitle.getText().toString();
         String description = storyDescription.getText().toString();
@@ -661,26 +766,63 @@ public class MainActivity extends AppCompatActivity {
         switchToDashboard();
     }
 
+    /**
+     * Callback method invoked when the "Delete Story" button is clicked.
+     * Deletes the currently edited story from the database, sets the editStory
+     * variable to null, and switches the current activity's content view back
+     * to the dashboard.
+     *
+     * @param view The view that was clicked (in this case, the "Delete Story" button).
+     */
     public void onDeleteStoryClicked(View view) {
         db.storyDao().deleteStory(editStory);
         editStory = null;
         switchToDashboard();
     }
 
+    /**
+     * Callback method invoked when the "Back" button is clicked.
+     * Switches the current activity's content view back to the dashboard.
+     *
+     * @param view The view that was clicked (in this case, the "Back" button).
+     */
     public void onBackClicked(View view) {
         switchToDashboard();
     }
 
+    /**
+     * Callback method invoked when the "New Story" button is clicked.
+     * Switches the current activity's content view to the "Create Story" layout.
+     *
+     * @param view The view that was clicked (in this case, the "New Story" button).
+     */
     public void onNewStoryClicked(View view) {
         switchToCreateStory();
     }
 
+    /**
+     * Callback method invoked when the "Pull In" button is clicked.
+     * Sets the sprint of the currently edited story to the current sprint, updates
+     * the story in the database, and switches the current activity's content view
+     * back to the dashboard.
+     *
+     * @param view The view that was clicked (in this case, the "Pull In" button).
+     */
     public void onPullInClicked(View view) {
         editStory.setSprint(getCurrentSprint());
         db.storyDao().updateStory(editStory);
         switchToDashboard();
     }
 
+    /**
+     * Callback method invoked when the "Login" button is clicked.
+     * Validates the entered username and password against the existing users in the database.
+     * If the user is found and the password is correct, logs in and switches to the dashboard.
+     * If the user is not found, creates a new user, logs in, and switches to the dashboard.
+     * Displays appropriate toast messages for the login process.
+     *
+     * @param view The view that was clicked (in this case, the "Login" button).
+     */
     public void onLoginClicked(View view) {
         List<User> users = db.userDao().getAll();
         User user = new User(username.getText().toString(), password.getText().toString());
@@ -705,6 +847,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Updates the ListView based on the specified filter and type.
+     *
+     * @param filter The filter to apply to the stories (e.g., purpose or sprint).
+     * @param type   The type of filter (e.g., "purpose" or "sprint").
+     */
     public void updateListView(String filter, String type) {
         String lowerFilter = filter.toLowerCase();
 
@@ -798,6 +946,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Gets the current sprint based on the week of the year.
+     *
+     * @return The current sprint.
+     */
     private int getCurrentSprint() {
         Calendar today = Calendar.getInstance();
         return today.get(Calendar.WEEK_OF_YEAR);
